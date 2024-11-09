@@ -1,0 +1,19 @@
+{% load static %}
+<header class="header header--loggedIn">
+    <div class="container">
+      <a href="{% url 'home' %}" class="header__logo">
+        <h1>Group 19</h1>
+      </a>
+      
+        <nav>
+            <div class="navbar">
+                <ul class="navbar-links">
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'compare' %}">Compare</a></li>
+                    <li><a href="{% url 'find' %}">Find</a></li>
+                    <li><a href="{% url 'room' %}">Rooms</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+  </header>

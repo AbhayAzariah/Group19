@@ -1,3 +1,14 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 
-# Create your views here.
+def home(request):
+    return render(request, 'base/home.html')
+
+def room(request):
+    return render(request, 'base/room.html')
+
+def find(request):
+    return render(request, 'base/find.html')
+
+def compare(request):
+    return render(request, 'base/compare.html')
