@@ -1,0 +1,236 @@
+* {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-rendering: optimizeLegibility;
+}
+
+html {
+    font-size: 56.25%;
+}
+
+body {
+    line-height: 1.6;
+    font-weight: 400;
+    font-size: 1.5rem;
+    color: black;
+    background-color: white;
+    min-height: 100vh;
+}
+
+a {
+    display: inline-block;
+    color: black;
+    text-decoration: none;
+}
+
+.container {
+    max-width: 120rem;
+    width: 90%;
+    margin: auto;
+}
+
+/*==============================
+=>  Header Section
+================================*/
+
+header {
+    background-color: black;
+    padding: 10px 0px;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header__logo {
+    text-decoration: none;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.header__logo h1 {
+    margin: 0;
+}
+
+nav .navbar {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-links {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 20px;
+}
+
+.navbar-links li {
+    list-style: none;
+}
+
+.navbar-links a {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    padding: 8px 12px;
+    transition: color 0.3s ease;
+}
+
+.navbar-links a:hover {
+    color: black;
+    background-color: white;
+    border-radius: 15%;
+}
+
+/*==============================
+=>  Home Section
+================================*/
+
+.main-content {
+    padding: 20px 0;
+}
+
+.intro-section {
+    text-align: center;
+    padding: 40px 0;
+}
+
+.intro-section h1 {
+    font-size: 3rem;
+    color: black;
+    margin-bottom: 10px;
+}
+
+.intro-section p {
+    font-size: 1.6rem;
+    color: var(--color-light-gray);
+}
+
+.features-section {
+    padding: 60px 0;
+    background-color: #f4f4f4;
+    text-align: center;
+}
+
+.features-container {
+    display: flex;
+    gap: 20px;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.feature-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    flex: 1 1 30%;
+    max-width: 350px;
+    min-height: 450px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+}
+
+.feature-card h5 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: black;
+}
+
+.feature-card p {
+    font-size: 1.4rem;
+    color: #666;
+    margin-bottom: 20px;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 10px;
+}
+
+.feature-card .btn {
+    padding: 10px 20px;
+    font-size: 1.4rem;
+    color: white;
+    background-color: black;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: auto;
+    align-self: center;
+    transition: background-color 0.3s ease;
+}
+
+.feature-card .btn:hover {
+    background-color: grey;
+}
+
+.feature-card:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.cta-section {
+    background-color: var(--color-main);
+    color: black;
+    text-align: center;
+    padding: 60px 0;
+}
+
+.cta-section h2 {
+    font-size: 2.8rem;
+    margin-bottom: 15px;
+}
+
+.cta-section p {
+    font-size: 1.6rem;
+    margin-bottom: 25px;
+}
+
+.cta-section .btn-primary {
+    font-size: 1.6rem;
+    color: var(--color-main);
+    color: white;
+    background-color: black;
+    padding: 12px 24px;
+    border-radius: 5px;
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.cta-section .btn-primary:hover {
+    background-color: grey;
+    color: white;
+}
+
+/*==============================
+=>  Footer Section
+================================*/
+
+footer {
+    background-color: black;
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    font-size: 1.4rem;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
+
+footer .footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+footer .footer-content p {
+    margin: 0;
+}

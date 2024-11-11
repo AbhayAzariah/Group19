@@ -6,4 +6,5 @@ urlpatterns = [
     path('room/', views.room, name="room"),
     path('find/', views.find, name="find"),
     path('compare/', views.compare, name="compare"),
+    path('register/', views.register, name="register"),
 ]

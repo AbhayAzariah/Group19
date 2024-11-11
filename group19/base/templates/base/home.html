@@ -2,8 +2,49 @@
 
 {% block content %}
 
-<main>
+<main class="main-content">
+    <!-- Intro Greeting -->
+    <section class="intro-section">
+        <div class="container">
+            <h1>Welcome to Group 19 Project!</h1>
+            <p>Whether you're a current graduate or looking ahead to your future academic journey, we’re here to help you find the best graduate schools and connect with fellow students.</p>
+        </div>
+    </section>
+
+    <!-- Features Section (3 Columns) -->
+    <section class="features-section">
+        <div class="container features-container">
+            <!-- Compare Graduate Schools -->
+            <div class="feature-card">
+                <h5>Compare Graduate Schools</h5>
+                <p>Compare graduate schools based on your criteria to make the right decision for your graduate education. Discover your top options!</p>
+                <a href="/compare" class="btn">Start Comparing</a>
+            </div>
+            
+            <!-- Find Best Matching Graduate Schools -->
+            <div class="feature-card">
+                <h5>Find the Best Matching Graduate Schools</h5>
+                <p>Use our personalized matching tool to find graduate programs that align with your career goals and other criteria.</p>
+                <a href="/find" class="btn">Find Your Match</a>
+            </div>
+            
+            <!-- Graduate Chatrooms -->
+            <div class="feature-card">
+                <h5>Graduate Chatrooms</h5>
+                <p>Join our chatrooms for group study, tutoring, networking, or more. A space for support and collaboration.</p>
+                <a href="/chatrooms" class="btn">Join the Chatrooms</a>
+            </div>
+        </div>
+    </section>
     
+    <!-- Call to Action Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to Take the Next Step?</h2>
+            <p>Whether you're applying to graduate school, looking for support, or connecting with peers, Group 19 is here to guide you on your academic journey.</p>
+            <a href="/register" class="btn btn-primary">Join Now</a>
+        </div>
+    </section>
 </main>
 
 {% endblock content %}

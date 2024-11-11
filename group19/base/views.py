@@ -12,3 +12,6 @@ def find(request):
 
 def compare(request):
     return render(request, 'base/compare.html')
+
+def register(request):
+    return render(request, 'base/register.html')
