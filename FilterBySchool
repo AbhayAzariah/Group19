@@ -3,17 +3,18 @@ import requests
 API_KEY = "gVaGW1IWY2gYQtinNU1z2aXQ5YxAfOM6175bQzmt"
 BASE_URL = "https://api.data.gov/ed/collegescorecard/v1/schools"
 
-def fetch_schools_by_name(name):
+def fetch_school_details(name):
     """
-    Fetches schools filtered by name.
+    Fetches detailed information about schools filtered by name.
     :param name: School name (partial or full).
-    :return: List of schools matching the name.
+    :return: List of schools matching the name with details.
     """
     params = {
         "api_key": API_KEY,
-        "fields": "id,school.name,school.city,school.state",
-        "school.name": name
+        "fields": "id,school.name,school.city,school.state,latest.admissions.admission_rate.overall,latest.cost.tuition.out_of_state,"
+                  "latest.student.size"
     }
+    params["school.name"] = name
     try:
         response = requests.get(BASE_URL, params=params)
         response.raise_for_status()
@@ -24,13 +25,29 @@ def fetch_schools_by_name(name):
         return []
 
 def display_schools(schools):
-    """Displays a list of schools."""
+    """Displays a list of schools with detailed information."""
     if not schools:
         print("No schools found.")
     else:
-        print("Matching Schools:")
+        print("\nMatching Schools:")
         for index, school in enumerate(schools, start=1):
-            print(f"{index}. {school['school.name']} (City: {school['school.city']}, State: {school['school.state']})")
+            name = school.get("school.name", "N/A")
+            location = f"{school.get('school.city', 'N/A')}, {school.get('school.state', 'N/A')}"
+            acceptance_rate = school.get("latest.admissions.admission_rate.overall")
+            cost = school.get("latest.cost.tuition.out_of_state", "N/A")
+            size = school.get("latest.student.size", "N/A")
+
+            # Handle None acceptance rate
+            if acceptance_rate is not None:
+                acceptance_rate = f"{acceptance_rate * 100:.2f}%"
+            else:
+                acceptance_rate = "N/A"
+
+            print(f"{index}. {name}")
+            print(f"   Location: {location}")
+            print(f"   Acceptance Rate: {acceptance_rate}")
+            print(f"   Cost (Out-of-State): ${cost:,} (if available)")
+            print(f"   Student Body Size: {size}\n")
 
 def add_to_comparison(comparison_index, school):
     """Adds a school to the comparison index."""
@@ -38,17 +55,33 @@ def add_to_comparison(comparison_index, school):
     print(f"Added {school['school.name']} to the comparison index.")
 
 def display_comparison_index(comparison_index):
-    """Displays the comparison index."""
+    """Displays the comparison index with detailed information."""
     if not comparison_index:
         print("The comparison index is empty.")
     else:
         print("\nComparison Index:")
         for school in comparison_index:
-            print(f"- {school['school.name']} (City: {school['school.city']}, State: {school['school.state']})")
-    print()
+            name = school.get("school.name", "N/A")
+            location = f"{school.get('school.city', 'N/A')}, {school.get('school.state', 'N/A')}"
+            acceptance_rate = school.get("latest.admissions.admission_rate.overall")
+            cost = school.get("latest.cost.tuition.out_of_state", "N/A")
+            size = school.get("latest.student.size", "N/A")
+
+            # Handle None acceptance rate
+            if acceptance_rate is not None:
+                acceptance_rate = f"{acceptance_rate * 100:.2f}%"
+            else:
+                acceptance_rate = "N/A"
+
+            # Display formatted information
+            print(f"- {name}")
+            print(f"   Location: {location}")
+            print(f"   Acceptance Rate: {acceptance_rate}")
+            print(f"   Cost (Out-of-State): ${cost:,} (if available)")
+            print(f"   Student Body Size: {size}\n")
 
 def main():
-    print("Welcome to the College Comparison Program!")
+    print("Welcome to the Grad School Comparison Program!")
     comparison_index = []
 
     while True:
@@ -60,9 +93,9 @@ def main():
 
         if choice == "1":
             name = input("Enter the university name (or part of it): ").strip()
-            schools = fetch_schools_by_name(name)
+            schools = fetch_school_details(name)
             display_schools(schools)
-            
+
             if schools:
                 selection = input("Enter the number of the university to add to the comparison index (or 'q' to cancel): ").strip()
                 if selection.isdigit() and 1 <= int(selection) <= len(schools):
