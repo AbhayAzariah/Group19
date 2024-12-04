@@ -1,0 +1,84 @@
+import requests
+
+API_KEY = "gVaGW1IWY2gYQtinNU1z2aXQ5YxAfOM6175bQzmt"
+BASE_URL = "https://api.data.gov/ed/collegescorecard/v1/schools"
+
+def fetch_schools_by_name(name):
+    """
+    Fetches schools filtered by name.
+    :param name: School name (partial or full).
+    :return: List of schools matching the name.
+    """
+    params = {
+        "api_key": API_KEY,
+        "fields": "id,school.name,school.city,school.state",
+        "school.name": name
+    }
+    try:
+        response = requests.get(BASE_URL, params=params)
+        response.raise_for_status()
+        data = response.json()
+        return data.get("results", [])
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching data from the API: {e}")
+        return []
+
+def display_schools(schools):
+    """Displays a list of schools."""
+    if not schools:
+        print("No schools found.")
+    else:
+        print("Matching Schools:")
+        for index, school in enumerate(schools, start=1):
+            print(f"{index}. {school['school.name']} (City: {school['school.city']}, State: {school['school.state']})")
+
+def add_to_comparison(comparison_index, school):
+    """Adds a school to the comparison index."""
+    comparison_index.append(school)
+    print(f"Added {school['school.name']} to the comparison index.")
+
+def display_comparison_index(comparison_index):
+    """Displays the comparison index."""
+    if not comparison_index:
+        print("The comparison index is empty.")
+    else:
+        print("\nComparison Index:")
+        for school in comparison_index:
+            print(f"- {school['school.name']} (City: {school['school.city']}, State: {school['school.state']})")
+    print()
+
+def main():
+    print("Welcome to the College Comparison Program!")
+    comparison_index = []
+
+    while True:
+        print("\nMenu:")
+        print("1. Search for a university")
+        print("2. View comparison index")
+        print("3. Exit")
+        choice = input("Choose an option: ").strip()
+
+        if choice == "1":
+            name = input("Enter the university name (or part of it): ").strip()
+            schools = fetch_schools_by_name(name)
+            display_schools(schools)
+            
+            if schools:
+                selection = input("Enter the number of the university to add to the comparison index (or 'q' to cancel): ").strip()
+                if selection.isdigit() and 1 <= int(selection) <= len(schools):
+                    add_to_comparison(comparison_index, schools[int(selection) - 1])
+                elif selection.lower() != 'q':
+                    print("Invalid selection.")
+        
+        elif choice == "2":
+            display_comparison_index(comparison_index)
+
+        elif choice == "3":
+            print("Goodbye!")
+            break
+
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
