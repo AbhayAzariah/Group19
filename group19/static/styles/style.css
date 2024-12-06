@@ -21,7 +21,7 @@ body {
 
 a {
     display: inline-block;
-    color: black;
+    color: white;
     text-decoration: none;
 }
 
@@ -36,7 +36,7 @@ a {
 ================================*/
 
 header {
-    background-color: black;
+    background-color: #003366;
     padding: 10px 0px;
 }
 
@@ -83,9 +83,46 @@ nav .navbar {
 }
 
 .navbar-links a:hover {
-    color: black;
-    background-color: white;
+    color: white;
+    background-color: #00509e;
     border-radius: 15%;
+}
+
+#profileToggle {
+    padding: 8px 12px;
+}
+
+#profileToggle:hover {
+    color: white;
+    background-color: #00509e;
+    border-radius: 15%;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: #00509e;
+    border: 1px solid black;
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+
+.dropdown-item {
+    display: block;
+    padding: 8px 12px;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+
+.dropdown-item:hover {
+    background-color: #003366;
 }
 
 /*==============================
@@ -114,8 +151,10 @@ nav .navbar {
 
 .features-section {
     padding: 60px 0;
-    background-color: #f4f4f4;
+    margin: 20px;
+    background-color: #cfd8e0;
     text-align: center;
+    border-radius: 5%;
 }
 
 .features-container {
@@ -126,7 +165,7 @@ nav .navbar {
 }
 
 .feature-card {
-    background-color: white;
+    background-color: #f5f5f5;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -148,7 +187,7 @@ nav .navbar {
 
 .feature-card p {
     font-size: 1.4rem;
-    color: #666;
+    color: #666666;
     margin-bottom: 20px;
     flex-grow: 1;
     display: flex;
@@ -162,7 +201,7 @@ nav .navbar {
     padding: 10px 20px;
     font-size: 1.4rem;
     color: white;
-    background-color: black;
+    background-color: #004080;
     border-radius: 5px;
     text-align: center;
     margin-top: auto;
@@ -171,7 +210,7 @@ nav .navbar {
 }
 
 .feature-card .btn:hover {
-    background-color: grey;
+    background-color: black;
 }
 
 .feature-card:hover {
@@ -199,14 +238,14 @@ nav .navbar {
     font-size: 1.6rem;
     color: var(--color-main);
     color: white;
-    background-color: black;
+    background-color: #004080;
     padding: 12px 24px;
     border-radius: 5px;
     transition: color 0.3s ease, background-color 0.3s ease;
 }
 
 .cta-section .btn-primary:hover {
-    background-color: grey;
+    background-color: black;
     color: white;
 }
 
@@ -215,7 +254,7 @@ nav .navbar {
 ================================*/
 
 footer {
-    background-color: black;
+    background-color: #002b4f;
     color: white;
     text-align: center;
     padding: 15px 0;
@@ -233,4 +272,567 @@ footer .footer-content {
 
 footer .footer-content p {
     margin: 0;
+}
+
+/* Chat Rooms Page Styles */
+.room-list-container {
+    padding: 40px 0;
+    text-align: center;
+    background-color: #f4f4f4;
+    border-radius: 15px;
+    margin: 30px auto; 
+    max-width: 110rem; 
+}
+
+
+.room-list-container h2 {
+    font-size: 5rem;
+    color: black;
+    margin-bottom: 20px;
+}
+
+.room-list-title {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.btn-primary {
+    padding: 12px 24px;
+    margin-right: 10px;
+    font-size: 1.6rem;
+    color: white;
+    background-color: #004080;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-primary:hover {
+    background-color: black;
+}
+
+/* Rooms List */
+.room-list {
+    list-style-type: none;
+    text-align: center;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.room-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px;
+}
+
+/* Room item styling */
+.room-item {
+    background-color: #cfd8e0;
+    color: black;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Room Header with Name and Time */
+.room-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+.room-name {
+    font-size: 2rem;
+    font-weight: bold;
+    color: black;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    text-align: left;
+}
+
+.room-time {
+    font-size: 1.4rem;
+    color: #666;
+    text-align: right;
+}
+
+/* Room Description */
+.room-description {
+    font-size: 1.6rem;
+    color: #666;
+    margin-top: 10px;
+    line-height: 1.6;
+    text-align: left;
+}
+
+/* Pagination styling */
+.pagination {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.pagination-btn {
+    display: inline-block;
+    padding: 8px 12px;
+    margin: 0 5px;
+    background-color: #333;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.pagination-btn:hover {
+    background-color: #555;
+}
+
+.current-page {
+    font-weight: bold;
+}
+
+/* Chatroom structure */
+.chatroom-wrapper {
+    background-color: #cfd8e0;
+    padding: 20px;
+    margin: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Room header */
+.room-section {
+    margin-bottom: 30px;
+}
+
+.room-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.room-info {
+    font-size: 1.4rem;
+    max-width: 75%;
+}
+
+.room-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.room-actions .btn,
+.message-actions .btn {
+    padding: 6px 12px;
+    font-size: 1.2rem;
+    color: white;
+    border-radius: 5px;
+}
+
+.room-actions .btn-edit,
+.message-actions .btn-edit{
+    background-color: #007bff;
+}
+
+.room-actions .btn-edit:hover,
+.message-actions .btn-edit:hover {
+    background-color: #0056b3;
+}
+
+.room-actions .btn-delete,
+.message-actions .btn-delete{
+    background-color: #dc3545;
+}
+
+.room-actions .btn-delete:hover,
+.message-actions .btn-delete:hover {
+    background-color: #a61e30;
+}
+
+/* Chatbox and messages */
+.chat-box {
+    margin-bottom: 20px;
+}
+
+.message {
+    background-color: white;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.message-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.message-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.message p {
+    margin-top: 10px;
+}
+
+/* Form styles */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%; 
+}
+
+/* Input field */
+form textarea {
+    width: 100%; 
+    padding: 10px;
+    font-size: 1.4rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box; 
+}
+
+/* Button styles */
+form button {
+    padding: 8px 16px;
+    font-size: 1.4rem;
+    background-color: #004080;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: auto;
+    align-self: center;
+}
+
+form button:hover {
+    background-color: #002d5c;
+}
+
+/* Create New Chat Room Page Styles */
+.create-room-container {
+    max-width: 100rem;
+    margin: 25px;
+    padding: 40px;
+    background-color: #cfd8e0;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.create-room-container h2 {
+    font-size: 3rem;
+    color: black;
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.create-room-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.create-room-container form label {
+    font-size: 1.6rem;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.create-room-container form input, 
+.create-room-container form textarea {
+    padding: 12px;
+    font-size: 1.4rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.create-room-container form textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.create-room-container form button {
+    padding: 12px 24px;
+    font-size: 1.6rem;
+    background-color: #004080;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    align-self: center;
+    margin-top: 20px;
+}
+
+.create-room-container form button:hover {
+    background-color: #002d5c;
+}
+
+.create-room-container form input:focus, 
+.create-room-container form textarea:focus {
+    border-color: #00509e;
+    outline: none;
+}
+
+.create-room-container form label[for="name"], 
+.create-room-container form label[for="description"] {
+    font-weight: 600;
+}
+
+/* Edit Room Page Styles */
+.edit-room-container {
+    max-width: 100rem;
+    margin: 25px;
+    padding: 40px;
+    background-color: #cfd8e0;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.edit-room-container h2 {
+    font-size: 3rem;
+    color: black;
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.edit-room-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.edit-room-container form label {
+    font-size: 1.6rem;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.edit-room-container form input, 
+.edit-room-container form textarea {
+    padding: 12px;
+    font-size: 1.4rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.edit-room-container form textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.edit-room-container form button {
+    padding: 12px 24px;
+    font-size: 1.6rem;
+    background-color: #004080;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    align-self: center;
+    margin-top: 20px;
+}
+
+.edit-room-container form button:hover {
+    background-color: #002d5c;
+}
+
+.edit-room-container form input:focus, 
+.edit-room-container form textarea:focus {
+    border-color: #00509e;
+    outline: none;
+}
+
+.edit-room-container form label[for="name"], 
+.edit-room-container form label[for="description"] {
+    font-weight: 600;
+}
+
+/* Edit Message Page Styles */
+.edit-message-container {
+    max-width: 100rem;
+    margin: 25px;
+    padding: 40px;
+    background-color: #cfd8e0;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.edit-message-container h2 {
+    font-size: 3rem;
+    color: black;
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.edit-message-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.edit-message-container form label {
+    font-size: 1.6rem;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.edit-message-container form textarea {
+    padding: 12px;
+    font-size: 1.4rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    resize: vertical;
+    min-height: 120px;
+}
+
+.edit-message-container form button {
+    padding: 12px 24px;
+    font-size: 1.6rem;
+    background-color: #004080;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    align-self: center;
+    margin-top: 20px;
+}
+
+.edit-message-container form button:hover {
+    background-color: #002d5c;
+}
+
+.edit-message-container form textarea:focus {
+    border-color: #00509e;
+    outline: none;
+}
+
+.edit-message-container form label[for="content"] {
+    font-weight: 600;
+}
+
+/* Profile Page Styles */
+.profile-container {
+    max-width: 80rem;
+    margin: 25px;
+    padding: 40px;
+    background-color: #cfd8e0;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile-heading {
+    text-align: center;
+}
+
+.change-pass-heading {
+    text-align: center;
+    margin-top: 50px ;
+    margin-bottom: 25px;
+}
+
+.profile-container h2 {
+    font-size: 3rem;
+    color: black;
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.profile-container h3 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.profile-container p {
+    font-size: 1.6rem;
+    color: #333;
+    margin-bottom: 25px;
+}
+
+.profile-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.profile-container form .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-container form label {
+    font-size: 1.6rem;
+    color: #333;
+}
+
+.profile-container form input {
+    padding: 12px;
+    font-size: 1.4rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.profile-container form input:focus {
+    border-color: #00509e;
+    outline: none;
+}
+
+.profile-container form button {
+    padding: 12px 24px;
+    font-size: 1.6rem;
+    background-color: #004080;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    align-self: center;
+    margin-top: 20px;
+}
+
+.profile-container form button:hover {
+    background-color: #002d5c;
+}
+
+.profile-container form .btn-warning {
+    background-color: #004080;
+}
+
+.profile-container form .btn-warning:hover {
+    background-color: #002d5c;
+}
+
+/* Add spacing between the Change Username and Change Password sections */
+.profile-container form h3 + form {
+    margin-top: 40px;
+}
+
+.profile-container form a {
+    display: block;
+    text-align: center;
+    font-size: 1.6rem;
+    color: #004080;
+    margin-top: 30px;
+    text-decoration: none;
+}
+
+.profile-container form a:hover {
+    text-decoration: underline;
 }
