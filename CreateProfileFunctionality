@@ -4,19 +4,14 @@ API_KEY = "gVaGW1IWY2gYQtinNU1z2aXQ5YxAfOM6175bQzmt"
 BASE_URL = "https://api.data.gov/ed/collegescorecard/v1/schools"
 
 def fetch_school_details(name):
-    """
-    Fetches detailed information about schools filtered by name, ensuring they offer graduate degrees.
-    :param name: School name (partial or full).
-    :return: List of schools matching the name with details.
-    """
     params = {
         "api_key": API_KEY,
         "fields": "id,school.name,school.city,school.state,latest.admissions.admission_rate.overall,"
                   "latest.cost.tuition.out_of_state,latest.student.size,"
                   "latest.earnings.EARN_MDN_5YR,latest.earnings.10_yrs_after_entry.median,"
-                  "cip_4_digit.earnings.highest.3_yr.working_not_enrolled.overall_count",
+                  "latest.earnings.EARN_COUNT_WNE_3YR",
         "school.name": name,
-        "school.degrees_awarded.highest": 4  # Filter for schools offering graduate degrees
+        "school.degrees_awarded.highest": 4
     }
     try:
         response = requests.get(BASE_URL, params=params)
@@ -41,7 +36,7 @@ def display_schools(schools):
             size = school.get("latest.student.size", "N/A")
             earnings_5yr = school.get("latest.earnings.EARN_MDN_5YR", "N/A")
             earnings_10yr = school.get("latest.earnings.10_yrs_after_entry.median", "N/A")
-            working_not_enrolled = school.get("cip_4_digit.earnings.highest.3_yr.working_not_enrolled.overall_count", "N/A")
+            earn_count_3yr = school.get("latest.earnings.EARN_COUNT_WNE_3YR", "N/A")
 
             # Handle None acceptance rate
             if acceptance_rate is not None:
@@ -54,6 +49,8 @@ def display_schools(schools):
                 earnings_5yr = f"${earnings_5yr:,}"
             if earnings_10yr != "N/A":
                 earnings_10yr = f"${earnings_10yr:,}"
+            if earn_count_3yr != "N/A":
+                earn_count_3yr = f"{earn_count_3yr:,} graduates working and not enrolled"
 
             print(f"{index}. {name}")
             print(f"   Location: {location}")
@@ -62,14 +59,50 @@ def display_schools(schools):
             print(f"   Student Body Size: {size}")
             print(f"   Median Earnings (5 years after graduation): {earnings_5yr}")
             print(f"   Median Earnings (10 years after entry): {earnings_10yr}")
+            print(f"   Graduates Working (Not Enrolled, 3 Years): {earn_count_3yr}\n")
+
+
+def add_to_comparison(comparison_index, school):
+    comparison_index.append(school)
+    print(f"Added {school['school.name']} to the comparison index.")
+
+def display_comparison_index(comparison_index):
+    if not comparison_index:
+        print("The comparison index is empty.")
+    else:
+        print("\nComparison Index:")
+        for index, school in enumerate(comparison_index, start=1):
+            name = school.get("school.name", "N/A")
+            location = f"{school.get('school.city', 'N/A')}, {school.get('school.state', 'N/A')}"
+            acceptance_rate = school.get("latest.admissions.admission_rate.overall")
+            cost = school.get("latest.cost.tuition.out_of_state", "N/A")
+            size = school.get("latest.student.size", "N/A")
+            earnings_5yr = school.get("latest.earnings.EARN_MDN_5YR", "N/A")
+            earnings_10yr = school.get("latest.earnings.10_yrs_after_entry.median", "N/A")
+            working_not_enrolled = school.get("cip_4_digit.earnings.highest.3_yr.working_not_enrolled.overall_count", "N/A")
+
+            if acceptance_rate is not None:
+                acceptance_rate = f"{acceptance_rate * 100:.2f}%"
+            else:
+                acceptance_rate = "N/A"
+
+            if earnings_5yr != "N/A":
+                earnings_5yr = f"${earnings_5yr:,}"
+            if earnings_10yr != "N/A":
+                earnings_10yr = f"${earnings_10yr:,}"
+
+            print(f"{index}. {name}")
+            print(f"   Location: {location}")
+            print(f"   Cost (Out-of-State): ${cost:,} (if available)")
+            print(f"   Student Body Size: {size}")
+            print(f"   Median Earnings (5 years after graduation): {earnings_5yr}")
+            print(f"   Median Earnings (10 years after entry): {earnings_10yr}")
             print(f"   3-Year Count of Working Not Enrolled (Highest Earnings): {working_not_enrolled}\n")
 
 def create_profile():
-    """Creates and stores a user profile with GPA, test scores, and desired major."""
     print("\nCreate Your Profile:")
     profile = {}
 
-    # Get GPA
     while True:
         gpa = input("Enter your undergraduate GPA (0.0 - 4.0): ").strip()
         try:
@@ -82,53 +115,39 @@ def create_profile():
         except ValueError:
             print("Invalid input. Please enter a numeric value.")
 
-    # Test scores
     print("\nDo you want to include test scores?")
     print("1. GRE")
     print("2. GMAT")
     print("3. Neither")
     test_choice = input("Choose an option: ").strip()
     if test_choice == "1":
-        # GRE Scores
         while True:
             try:
                 verbal = int(input("Enter your GRE Verbal score (130-170): ").strip())
                 quant = int(input("Enter your GRE Quantitative score (130-170): ").strip())
                 if 130 <= verbal <= 170 and 130 <= quant <= 170:
-                    profile['GRE'] = {
-                        "Verbal": verbal,
-                        "Quantitative": quant,
-                        "Total": verbal + quant
-                    }
+                    profile['GRE'] = {"Verbal": verbal, "Quantitative": quant, "Total": verbal + quant}
                     break
                 else:
                     print("Scores must be between 130 and 170.")
             except ValueError:
-                print("Invalid input. Please enter numeric values.")
+                print("Invalid input.")
     elif test_choice == "2":
-        # GMAT Scores
         while True:
             try:
                 data_insight = int(input("Enter your GMAT Data Insight score (60-90): ").strip())
                 verbal = int(input("Enter your GMAT Verbal Reasoning score (60-90): ").strip())
                 quant = int(input("Enter your GMAT Quantitative Reasoning score (60-90): ").strip())
-                total = data_insight + verbal + quant
                 if 60 <= data_insight <= 90 and 60 <= verbal <= 90 and 60 <= quant <= 90:
-                    profile['GMAT'] = {
-                        "Data Insight": data_insight,
-                        "Verbal Reasoning": verbal,
-                        "Quantitative Reasoning": quant,
-                        "Total": total
-                    }
+                    profile['GMAT'] = {"Data Insight": data_insight, "Verbal Reasoning": verbal, "Quantitative Reasoning": quant, "Total": data_insight + verbal + quant}
                     break
                 else:
                     print("Scores must be between 60 and 90.")
             except ValueError:
-                print("Invalid input. Please enter numeric values.")
+                print("Invalid input.")
     else:
         profile['Test Optional'] = True
 
-    # Desired major
     major = input("Enter your desired Graduate Program: ").strip()
     profile['Major'] = major
 
