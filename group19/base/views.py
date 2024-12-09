@@ -15,15 +15,34 @@ from static.py.program_logic import fetch_school_details
 def home(request):
     return render(request, 'base/home.html')
 
-# View for finding a room
-def find(request):
-    return render(request, 'base/find.html')
 
-# View for comparing rooms
+# View for finding universities
+def find(request):
+    """
+    Handles the search for universities and displays the results.
+    """
+    search_results = []
+
+    if request.method == "POST":
+        # Get the search query from the form
+        search_query = request.POST.get("search_query", "").strip()
+        if search_query:
+            # Call the fetch_school_details function to get university data
+            search_results = fetch_school_details(search_query)
+
+            # Handle cases where no results are found
+            if not search_results:
+                messages.info(request, f"No results found for '{search_query}'. Please try another search.")
+        else:
+            messages.error(request, "Please enter a university name to search.")
+
+    return render(request, "base/find.html", {"search_results": search_results})
+
+
+# Other views remain unchanged
 def compare(request):
     return render(request, 'base/compare.html')
 
-# View for listing rooms with pagination
 def room_list(request):
     query = request.GET.get('q', '')  # Get the search query from GET
     rooms = Room.objects.all()
@@ -41,8 +60,6 @@ def room_list(request):
     }
     return render(request, 'base/room_list.html', context)
 
-
-# View for creating a room
 @login_required(login_url='login_register')
 def create_room(request):
     if request.method == 'POST':
@@ -52,7 +69,6 @@ def create_room(request):
         return redirect('room_list')
     return render(request, 'base/create_room.html')
 
-# View for chatroom with messages
 @login_required(login_url='login_register')
 def chatroom(request, room_id):
     room = get_object_or_404(Room, id=room_id)
@@ -69,7 +85,6 @@ def chatroom(request, room_id):
 
     return render(request, 'base/chatroom.html', {'room': room, 'messages': messages, 'form': form})
 
-# View for editing room details
 @login_required(login_url='login_register')
 def edit_room(request, room_id):
     room = get_object_or_404(Room, id=room_id)
@@ -86,21 +101,17 @@ def edit_room(request, room_id):
 
     return render(request, 'base/edit_room.html', {'room': room})
 
-# View for deleting a room
 @login_required(login_url='login_register')
 def delete_room(request, room_id):
     room = get_object_or_404(Room, id=room_id)
 
-
     if room.creator != request.user:
         return HttpResponseForbidden("You are not authorized to delete this room")
-
 
     if request.method == "POST":
         room.delete()
         messages.success(request, 'Room deleted successfully')
         return redirect('room_list')
-
 
     return render(request, 'base/confirm_delete.html', {
         'object': room,
@@ -108,7 +119,6 @@ def delete_room(request, room_id):
         'confirm_url': request.path
     })
 
-# View for editing message content
 @login_required(login_url='login_register')
 def edit_message(request, message_id):
     message = get_object_or_404(Message, id=message_id)
@@ -124,15 +134,12 @@ def edit_message(request, message_id):
 
     return render(request, 'base/edit_message.html', {'message': message})
 
-# View for deleting a message
 @login_required(login_url='login_register')
 def delete_message(request, message_id):
     message = get_object_or_404(Message, id=message_id)
 
-
     if message.user != request.user:
         return HttpResponseForbidden("You are not authorized to delete this message")
-
 
     if request.method == "POST":
         room_id = message.room.id
@@ -140,14 +147,12 @@ def delete_message(request, message_id):
         messages.success(request, 'Message deleted successfully')
         return redirect('chatroom', room_id=room_id)
 
-
     return render(request, 'base/confirm_delete.html', {
         'object': message,
         'type': 'message',
         'confirm_url': request.path
     })
 
-# View for login and registration
 def login_register(request):
     if request.user.is_authenticated:
         return redirect('profile')
@@ -165,7 +170,6 @@ def login_register(request):
                 return redirect('home')
             else:
                 messages.error(request, 'Incorrect username or password')
-
 
         elif page == 'register':
             form = UserCreationForm(request.POST)
@@ -186,19 +190,14 @@ def login_register(request):
 
     return render(request, 'base/login_register.html', {'form': form, 'page': page})
 
-
-# View for logging out the user
 def logout_user(request):
     logout(request)
     return redirect('home')
 
-# View for updating user profile
 @login_required(login_url='login_register')
 def profile(request):
     user = request.user
     password_form = PasswordChangeForm(user)
-    
-    # Fetch the rooms created by the logged-in user
     rooms = Room.objects.filter(creator=user)
 
     if request.method == 'POST':
@@ -225,12 +224,28 @@ def profile(request):
         'rooms': rooms 
     })
 
-# View for finding universities
-def find_university_view(request):
-    search_results = []
+def add_to_comparison(request):
+    """Handles adding a university to the comparison index."""
     if request.method == "POST":
-        search_query = request.POST.get("search_query")
-        if search_query:
-            search_results = fetch_school_details(search_query)
+        comparison_index = request.session.get('comparison_index', [])
 
-    return render(request, "base/find.html", {"search_results": search_results})
+        university = {
+            "name": request.POST.get("name"),
+            "city": request.POST.get("city"),
+            "state": request.POST.get("state"),
+            "acceptance_rate": request.POST.get("acceptance_rate"),
+            "tuition": request.POST.get("tuition"),
+            "size": request.POST.get("size"),
+            "earnings_5yr": request.POST.get("earnings_5yr"),
+            "earnings_10yr": request.POST.get("earnings_10yr"),
+            "earn_count_3yr": request.POST.get("earn_count_3yr"),
+        }
+
+        if university not in comparison_index:
+            comparison_index.append(university)
+            request.session['comparison_index'] = comparison_index
+            messages.success(request, f"{university['name']} added to comparison index.")
+        else:
+            messages.info(request, f"{university['name']} is already in the comparison index.")
+
+    return redirect('find')
