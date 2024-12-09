@@ -6,15 +6,14 @@ from django.contrib import messages
 from django.http import HttpResponseForbidden
 from django.contrib.auth import update_session_auth_hash
 from django.core.paginator import Paginator
-from .models import Room, Message
-from .forms import MessageForm
+from .models import Room, Message, Profile
+from .forms import MessageForm, ProfileForm
 from static.py.program_logic import fetch_school_details
 
 
 # View for home page
 def home(request):
     return render(request, 'base/home.html')
-
 
 # View for finding universities
 def find(request):
@@ -37,7 +36,6 @@ def find(request):
             messages.error(request, "Please enter a university name to search.")
 
     return render(request, "base/find.html", {"search_results": search_results})
-
 
 # Other views remain unchanged
 def compare(request):
@@ -155,40 +153,57 @@ def delete_message(request, message_id):
 
 def login_register(request):
     if request.user.is_authenticated:
-        return redirect('profile')
-   
-    page = request.GET.get('page', 'login')
+        return redirect('profile')  # Redirect authenticated users to the profile page
 
+    page = request.GET.get('page', 'login')  # Default to login page
+
+    # Handling POST request
     if request.method == 'POST':
-        if page == 'login':
+        if page == 'login':  # Handling login form submission
             username = request.POST.get('username').lower()
             password = request.POST.get('password')
 
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('home')
+                return redirect('home')  # Redirect to home page after successful login
             else:
                 messages.error(request, 'Incorrect username or password')
 
-        elif page == 'register':
+        elif page == 'register':  # Handling registration form submission
             form = UserCreationForm(request.POST)
-            if form.is_valid():
+            profile_form = ProfileForm(request.POST)
+
+            if form.is_valid() and profile_form.is_valid():
+                # Create user from the form
                 user = form.save(commit=False)
-                user.username = user.username.lower()
+                user.username = user.username.lower()  # Ensure username is lowercase
                 user.save()
-                login(request, user)
-                return redirect('home')
+                login(request, user)  # Log the user in immediately after registration
+
+                # Create the profile for the user after registration
+                profile = profile_form.save(commit=False)
+                profile.user = user  # Link the profile to the user
+                profile.save()
+
+                messages.success(request, 'Registration successful!')
+                return redirect('home')  # Redirect to home page after successful registration
             else:
-                messages.error(request, 'An error occurred during registration')
+                messages.error(request, 'An error occurred during registration.')
 
-    else:
+    else:  # Handling GET request
+        form = None
+        profile_form = None
+
         if page == 'register':
-            form = UserCreationForm()
-        else:
-            form = None
+            form = UserCreationForm()  # Form for registration
+            profile_form = ProfileForm()  # Form for the user's profile
 
-    return render(request, 'base/login_register.html', {'form': form, 'page': page})
+    return render(request, 'base/login_register.html', {
+        'form': form,               # Pass the form for registration or login
+        'profile_form': profile_form,  # Pass the profile form if registering
+        'page': page                # Keep track of the page (login or register)
+    })
 
 def logout_user(request):
     logout(request)

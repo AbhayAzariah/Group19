@@ -765,7 +765,7 @@ form button:hover {
 }
 
 .profile-container {
-    max-width: 80rem;
+    width: 90%;
     margin: 25px;
     padding: 40px;
     background-color: #cfd8e0;

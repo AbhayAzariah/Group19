@@ -1,5 +1,6 @@
 {% extends 'main.html' %}
 
+
 {% block content %}
     <div class="container">
         <h2>{% if page == 'login' %}Login{% else %}Register{% endif %}</h2>
@@ -24,7 +25,7 @@
                 {% csrf_token %}
                 <div class="form-group">
                     <label for="username">Username</label>
-                    <input type="text" name="username" id="username" required class="form-control" placeholder="Choose a username" value="{{ form.username.value }}">
+                    <input type="text" name="username" id="username" required class="form-control" placeholder="Choose a username" value="{{ form.username.value|default:'' }}">
                     {% if form.username.errors %}
                         <div class="alert alert-danger">
                             {% for error in form.username.errors %}
@@ -55,6 +56,54 @@
                         </div>
                     {% endif %}
                 </div>
+                
+                <!-- Profile Fields -->
+                <div class="form-group">
+                    <label for="gre_score">GRE Score</label>
+                    <input type="number" name="gre_score" id="gre_score" class="form-control" placeholder="Enter your GRE score">
+                </div>
+                <div class="form-group">
+                    <label for="gmat_score">GMAT Score</label>
+                    <input type="number" name="gmat_score" id="gmat_score" class="form-control" placeholder="Enter your GMAT score">
+                </div>
+                <div class="form-group">
+                    <label for="undergrad_gpa">Undergraduate GPA</label>
+                    <input type="number" name="undergrad_gpa" id="undergrad_gpa" step="0.01" class="form-control" placeholder="Enter your undergraduate GPA">
+                </div>
+                <div class="form-group">
+                    <label for="desired_field_of_study">Desired Field of Study</label>
+                    <input type="text" name="desired_field_of_study" id="desired_field_of_study" class="form-control" placeholder="Enter your desired field of study">
+                </div>
+                <div class="form-group">
+                    <label for="recommendation_letters">Number of Recommendation Letters</label>
+                    <input type="number" name="recommendation_letters" id="recommendation_letters" class="form-control" placeholder="Enter the number of recommendation letters">
+                </div>
+                <div class="form-group">
+                    <label for="campus_rank_1">Campus Preference 1 (Rank 1)</label>
+                    <select name="campus_rank_1" id="campus_rank_1" class="form-control">
+                        <option value="1">Rural</option>
+                        <option value="2">Suburban</option>
+                        <option value="3">Urban</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="campus_rank_2">Campus Preference 2 (Rank 2)</label>
+                    <select name="campus_rank_2" id="campus_rank_2" class="form-control">
+                        <option value="1">Rural</option>
+                        <option value="2">Suburban</option>
+                        <option value="3">Urban</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="campus_rank_3">Campus Preference 3 (Rank 3)</label>
+                    <select name="campus_rank_3" id="campus_rank_3" class="form-control">
+                        <option value="1">Rural</option>
+                        <option value="2">Suburban</option>
+                        <option value="3">Urban</option>
+                    </select>
+                </div>
+
+
                 <button type="submit" class="btn btn-success">Register</button>
             </form>
             <p>Already have an account? <a href="{% url 'login_register' %}?page=login">Login here</a>.</p>
