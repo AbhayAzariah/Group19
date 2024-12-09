@@ -1,82 +1,111 @@
 {% extends 'main.html' %}
 
-
 {% block content %}
-<div class="profile-container">
-    <h2>Profile</h2>
-    
-    <p><strong>Welcome {{ user.username }}</strong></p>
+<div class="centered-profile">
+    <div class="profile-container">
+        <h2>Profile</h2>
+        
+        <p><strong>Welcome {{ user.username }}</strong></p>
 
-    <!-- Change Username Form -->
-    <div class="profile-heading">
-        <h3>Change Username</h3>
-    </div>
+        <!-- Change Username Form -->
+        <div class="profile-card">
+            <div class="profile-heading">
+                <h3>Change Username</h3>
+            </div>
 
-    <form method="POST">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="username">New Username</label>
-            <input type="text" name="username" id="username" class="form-control" placeholder="Enter new username" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Update Username</button>
-    </form>
-
-    <!-- Change Password Form -->
-    <div class="change-pass-heading">
-        <h3>Change Password</h3>
-    </div>
-    <form method="POST">
-        {% csrf_token %}
-        {{ password_form.as_p }}  <!-- Display the password change form -->
-        <button type="submit" class="btn btn-warning">Update Password</button>
-    </form>
-
-    <!-- User Created Rooms -->
-    <div class="container room-list">
-        <div class="room-list-header">
-            <h2 class="room-list-title">Your Created Rooms</h2>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="username">New Username</label>
+                    <input type="text" name="username" id="username" class="form-control" placeholder="Enter new username" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Update Username</button>
+            </form>
         </div>
 
-        <ul class="room-list">
-            {% for room in rooms %}
-                <li class="room-item">
-                    <a href="{% url 'chatroom' room.id %}" class="room-link">
-                        <div class="room-header">
-                            <p class="room-name">@{{ room.creator.username }}</p>
-                            <p class="room-time">{{ room.created_at|timesince }} ago</p>
-                        </div>
-                        <h3 class="room-name">{{ room.name }}</h3>
-                        <p class="room-description">
-                            {% if room.description|length > 100 %}
-                                {{ room.description|slice:":100" }}...
-                            {% else %}
-                                {{ room.description }}
-                            {% endif %}
-                        </p>
-                    </a>
-                </li>
-            {% empty %}
-                <p>You haven't created any rooms yet.</p>
-            {% endfor %}
-        </ul>
+        <!-- Change Password Form -->
+        <div class="profile-card">
+            <div class="change-pass-heading">
+                <h3>Change Password</h3>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="id_old_password">Current Password</label>
+                    {{ password_form.old_password }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_new_password1">New Password</label>
+                    {{ password_form.new_password1 }}
+                    <small class="password-requirements">
+                        <ul>
+                            <li>Must be at least 8 characters long</li>
+                            <li>Must contain both uppercase and lowercase characters</li>
+                            <li>Must contain at least one number</li>
+                            <li>Must contain at least one special character (e.g., @, #, $, etc.)</li>
+                        </ul>
+                    </small>
+                </div>
+        
+                <div class="form-group">
+                    <label for="id_new_password2">Confirm New Password</label>
+                    {{ password_form.new_password2 }}
+                    <small class="password-requirements">Enter the same password as above.</small> 
+                </div>
+        
+                <button type="submit" class="btn btn-warning">Update Password</button>
+            </form>
+        </div>                
 
-        <!-- Pagination -->
-        <div class="pagination">
-            {% if rooms.has_previous %}
-                <a href="?page={{ rooms.previous_page_number }}" class="pagination-btn">Previous</a>
-            {% endif %}
-            {% for num in rooms.paginator.page_range %}
-                {% if rooms.number == num %}
-                    <strong class="current-page">{{ num }}</strong>
-                {% else %}
-                    <a href="?page={{ num }}" class="pagination-btn">{{ num }}</a>
+        <!-- User Created Rooms -->
+        <div class="profile-card">
+            <div class="room-list-header">
+                <h2 class="profile-room-list-title">Your Created Rooms</h2>
+            </div>
+
+            <ul class="room-list">
+                {% for room in rooms %}
+                    <li class="room-item">
+                        <a href="{% url 'chatroom' room.id %}" class="room-link">
+                            <div class="room-header">
+                                <p class="room-name">@{{ room.creator.username }}</p>
+                                <p class="room-time">{{ room.created_at|timesince }} ago</p>
+                            </div>
+                            <h3 class="room-name">{{ room.name }}</h3>
+                            <p class="room-description">
+                                {% if room.description|length > 100 %}
+                                    {{ room.description|slice:":100" }}...
+                                {% else %}
+                                    {{ room.description }}
+                                {% endif %}
+                            </p>
+                        </a>
+                    </li>
+                {% empty %}
+                    <p>You haven't created any rooms yet.</p>
+                {% endfor %}
+            </ul>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                {% if rooms.has_previous %}
+                    <a href="?page={{ rooms.previous_page_number }}" class="pagination-btn">Previous</a>
                 {% endif %}
-            {% endfor %}
-            {% if rooms.has_next %}
-                <a href="?page={{ rooms.next_page_number }}" class="pagination-btn">Next</a>
-            {% endif %}
+                {% for num in rooms.paginator.page_range %}
+                    {% if rooms.number == num %}
+                        <strong class="current-page">{{ num }}</strong>
+                    {% else %}
+                        <a href="?page={{ num }}" class="pagination-btn">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+                {% if rooms.has_next %}
+                    <a href="?page={{ rooms.next_page_number }}" class="pagination-btn">Next</a>
+                {% endif %}
+            </div>
         </div>
-    </div>
 
+    </div>
 </div>
 {% endblock %}

@@ -2,19 +2,26 @@
 
 
 {% block content %}
-<div class="container room-list">
+<div class="room-list-container">
     <div class="room-list-header">
         <h2 class="room-list-title">Chat Rooms</h2>
 
-        <!-- Search Form -->
+
+        <!-- Create Room Button -->
+        <a href="{% url 'create_room' %}" class="btn btn-primary">Create Room</a>
+    </div>
+
+
+    <!-- Search Form Container -->
+    <div class="search-container">
         <form method="GET" action="{% url 'room_list' %}" class="search-form">
             <input type="text" name="q" value="{{ query }}" placeholder="Search rooms">
             <button type="submit" class="btn btn-search">Search</button>
         </form>
-
-        <a href="{% url 'create_room' %}" class="btn btn-primary">Create Room</a>
     </div>
 
+
+    <!-- Room List -->
     <ul class="room-list">
         {% for room in rooms %}
             <li class="room-item">
@@ -35,6 +42,7 @@
             </li>
         {% endfor %}
     </ul>
+
 
     <!-- Pagination -->
     <div class="pagination">

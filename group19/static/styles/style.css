@@ -276,12 +276,13 @@ footer .footer-content p {
 
 /* Chat Rooms Page Styles */
 .room-list-container {
-    padding: 40px 0;
+    padding: 40px 5%;
     text-align: center;
     background-color: #f4f4f4;
     border-radius: 15px;
     margin: 30px auto; 
-    max-width: 110rem; 
+    max-width: 120rem; 
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -299,6 +300,28 @@ footer .footer-content p {
     font-size: 3rem;
     font-weight: bold;
     margin-left: 10px;
+    margin-bottom: 30px;
+}
+
+.profile-room-list-title {
+    flex: center;
+    font-size: 3rem;
+    font-weight: bold;
+    margin-left: 10px;
+    margin-bottom: 30px;
+}
+
+.profile-card {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px 5%;
+    text-align: center;
+    background-color: #f4f4f4;
+    border-radius: 15px;
+    margin: 30px auto; 
+    max-width: 120rem; 
+    width: 100%;
 }
 
 .btn-primary {
@@ -322,13 +345,16 @@ footer .footer-content p {
     text-align: center;
     padding: 0;
     margin: 20px 0;
+    flex-grow: 1;
+    width: 100%;
 }
 
 .room-list-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 20px;
+    margin: 20px 0;
+    width: 100%;
 }
 
 /* Room item styling */
@@ -731,6 +757,13 @@ form button:hover {
 }
 
 /* Profile Page Styles */
+.centered-profile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
 .profile-container {
     max-width: 80rem;
     margin: 25px;
@@ -750,7 +783,7 @@ form button:hover {
 
 .change-pass-heading {
     text-align: center;
-    margin-top: 50px ;
+    margin-top: 50px;
     margin-bottom: 25px;
 }
 
@@ -778,16 +811,23 @@ form button:hover {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .profile-container form .form-group {
     display: flex;
     flex-direction: column;
+    align-items: center; /* Changed from flex-start to center */
+    text-align: center;
+    width: 100%;
 }
 
 .profile-container form label {
     font-size: 1.6rem;
-    color: #333;
+    color: #444;
+    margin-bottom: 8px;
 }
 
 .profile-container form input {
@@ -796,6 +836,7 @@ form button:hover {
     border: 1px solid #ccc;
     border-radius: 5px;
     box-sizing: border-box;
+    width: 80%;
 }
 
 .profile-container form input:focus {
@@ -845,42 +886,139 @@ form button:hover {
     text-decoration: underline;
 }
 
-/* Style for the search form */
+/* Remove the bullet points from the list and style the list items */
+.profile-container ul {
+    list-style-type: none; /* Remove bullet points */
+    padding: 0;
+    margin: 0;
+}
+
+.profile-container ul li {
+    text-align: center; /* Center align the list items */
+    margin-bottom: 10px; /* Add space between items */
+}
+
+.profile-container ul li a {
+    text-decoration: none;
+    color: #004080; /* Link color */
+    font-size: 1.4rem;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+}
+
+.profile-container ul li a:hover {
+    background-color: #00509e; /* Background color on hover */
+    color: white; /* Text color on hover */
+}
+
+/* Adjust search container layout */
+.search-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    width: 100%;
+}
+
+/* Style the search form as a row */
 .search-form {
     display: flex;
-    justify-content: flex-start; 
-    margin-bottom: 20px;
+    justify-content: space-between;
+    align-items: center;
+    width: 70%; 
 }
 
-.search-form input[type="text"] {
+/* Style the input to be long */
+.search-form input {
+    width: 85%;
     padding: 10px;
-    font-size: 16px;
+    font-size: 1.6rem;
+    border-radius: 5px;
     border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 250px; 
-    margin-right: 10px; 
+    margin-right: 10px;
 }
 
+/* Style the button next to the input */
 .search-form button {
-    padding: 10px 15px;
-    font-size: 16px;
-    background-color: #007bff; 
+    padding: 10px 20px;
+    font-size: 1.6rem;
     color: white;
-    border: none;
-    border-radius: 4px;
+    background-color: #004080;
+    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    border: none;
+    white-space: nowrap;
 }
 
 .search-form button:hover {
-    background-color: #0056b3; 
+    background-color: black;
 }
 
-.search-form input[type="text"]:focus {
-    outline: none;
-    border-color: #0056b3;  
+/* Styles for delete page */
+.container-delete {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px; 
+    width: 100%;
+    min-height: calc(100vh - 100px); 
+    box-sizing: border-box;
 }
 
-.search-form button:focus {
-    outline: none;
+.delete-card {
+    background-color: #cfd8e0;
+    color: black;
+    padding: 60px;
+    border-radius: 20px; 
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); 
+    max-width: 800px; 
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.text-danger {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+.text-warning {
+    font-size: 2rem;
+    margin: 30px 0;
+}
+
+/* Buttons */
+.btn-confirm, .btn-cancel {
+    display: inline-block;
+    padding: 20px 40px;
+    font-size: 1.8rem;
+    border-radius: 10px;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    margin: 20px 15px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-confirm {
+    background-color: #dc3545;
+}
+
+.btn-confirm:hover {
+    background-color: #a61e30;
+}
+
+.btn-cancel {
+    background-color: #007bff;
+    color: black;
+}
+
+.btn-cancel:hover {
+    background-color: #0056b3;
 }
