@@ -1,38 +1,88 @@
-{% extends 'main.html' %}
-
+{% extends "main.html" %}
+{% load humanize %}
 
 {% block content %}
-<div class="container">
-    <h2>Find a University</h2>
+<div class="container mt-4">
+    <h1 class="mb-4">Find Universities</h1>
 
     <!-- Search Form -->
-    <form method="POST" action="{% url 'find' %}">
+    <form method="POST" action="{% url 'find' %}" class="mb-4">
         {% csrf_token %}
-        <div class="form-group">
-            <label for="search_query">Search for a University:</label>
-            <input type="text" id="search_query" name="search_query" class="form-control" placeholder="Enter a university name" required>
+        <div class="input-group">
+            <input type="text" name="search_query" 
+                   placeholder="Enter university name..." 
+                   class="form-control" 
+                   value="{{ request.POST.search_query|default_if_none:'' }}">
+            <button type="submit" class="btn btn-primary">Search</button>
         </div>
-        <button type="submit" class="btn btn-primary">Search</button>
     </form>
 
-    <!-- Display Search Results -->
-    {% if search_results %}
-        <h3 class="mt-4">Search Results</h3>
-        <ul class="list-group">
-            {% for university in search_results %}
-                <li class="list-group-item">
-                    <strong>{{ university.school.name }}</strong> - {{ university.school.city }}, {{ university.school.state }}
-                    <ul>
-                        <li>Acceptance Rate: {{ university.latest.admissions.admission_rate.overall|floatformat:2 }}%</li>
-                        <li>Tuition: ${{ university.latest.cost.tuition.out_of_state|default:"N/A" }}</li>
-                        <li>Student Size: {{ university.latest.student.size|default:"N/A" }}</li>
-                        <li>Median Earnings (5 Years): ${{ university.latest.earnings.EARN_MDN_5YR|default:"N/A" }}</li>
-                    </ul>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p class="mt-4">No results found. Try another search.</p>
-    {% endif %}
+    <!-- Display Results -->
+    <div class="search-results">
+        {% if search_results %}
+            <h2>Search Results</h2>
+            <ul class="list-group">
+                {% for result in search_results %}
+                    <li class="list-group-item mb-3">
+                        <h3 class="mb-2">{{ result.name }}</h3>
+                        <p><strong>Location:</strong> {{ result.city }}, {{ result.state }}</p>
+                        <p><strong>Acceptance Rate:</strong> {{ result.acceptance_rate|floatformat:2 }}%</p>
+                        <p><strong>Tuition (Out-of-State):</strong> 
+                            {% if result.tuition != "N/A" %}
+                                ${{ result.tuition|intcomma }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </p>
+                        <p><strong>Student Body Size:</strong> 
+                            {% if result.size != "N/A" %}
+                                {{ result.size|intcomma }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </p>
+                        <p><strong>Median Earnings (5 Years):</strong> 
+                            {% if result.earnings_5yr != "N/A" %}
+                                ${{ result.earnings_5yr|intcomma }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </p>
+                        <p><strong>Median Earnings (10 Years):</strong> 
+                            {% if result.earnings_10yr != "N/A" %}
+                                ${{ result.earnings_10yr|intcomma }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </p>
+                        <p><strong>Working Graduates (3 Years):</strong> 
+                            {% if result.earn_count_3yr != "N/A" %}
+                                {{ result.earn_count_3yr|intcomma }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </p>
+
+                        <!-- Add to Comparison Button -->
+                        <form method="POST" action="{% url 'add_to_comparison' %}" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="name" value="{{ result.name }}">
+                            <input type="hidden" name="city" value="{{ result.city }}">
+                            <input type="hidden" name="state" value="{{ result.state }}">
+                            <input type="hidden" name="acceptance_rate" value="{{ result.acceptance_rate }}">
+                            <input type="hidden" name="tuition" value="{{ result.tuition }}">
+                            <input type="hidden" name="size" value="{{ result.size }}">
+                            <input type="hidden" name="earnings_5yr" value="{{ result.earnings_5yr }}">
+                            <input type="hidden" name="earnings_10yr" value="{{ result.earnings_10yr }}">
+                            <input type="hidden" name="earn_count_3yr" value="{{ result.earn_count_3yr }}">
+                            <button type="submit" class="btn btn-secondary btn-sm">Add to Comparison</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-warning">No results found. Try searching for another university.</p>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
