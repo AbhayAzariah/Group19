@@ -48,6 +48,8 @@ def room_list(request):
     if query:
         rooms = rooms.filter(name__icontains=query) | rooms.filter(description__icontains=query)
 
+    rooms = rooms.order_by('-created_at')
+
     paginator = Paginator(rooms, 5)  # 5 rooms per page
     page = request.GET.get('page')
     rooms_paginated = paginator.get_page(page)
@@ -155,13 +157,18 @@ def login_register(request):
     if request.user.is_authenticated:
         return redirect('profile')  # Redirect authenticated users to the profile page
 
+
     page = request.GET.get('page', 'login')  # Default to login page
+    form = None
+    profile_form = None
+
 
     # Handling POST request
     if request.method == 'POST':
         if page == 'login':  # Handling login form submission
             username = request.POST.get('username').lower()
             password = request.POST.get('password')
+
 
             user = authenticate(request, username=username, password=password)
             if user is not None:
@@ -170,9 +177,11 @@ def login_register(request):
             else:
                 messages.error(request, 'Incorrect username or password')
 
+
         elif page == 'register':  # Handling registration form submission
             form = UserCreationForm(request.POST)
             profile_form = ProfileForm(request.POST)
+
 
             if form.is_valid() and profile_form.is_valid():
                 # Create user from the form
@@ -181,23 +190,25 @@ def login_register(request):
                 user.save()
                 login(request, user)  # Log the user in immediately after registration
 
+
                 # Create the profile for the user after registration
                 profile = profile_form.save(commit=False)
                 profile.user = user  # Link the profile to the user
                 profile.save()
+
 
                 messages.success(request, 'Registration successful!')
                 return redirect('home')  # Redirect to home page after successful registration
             else:
                 messages.error(request, 'An error occurred during registration.')
 
-    else:  # Handling GET request
-        form = None
-        profile_form = None
 
+    # Handling GET request or when POST fails
+    else:
         if page == 'register':
             form = UserCreationForm()  # Form for registration
             profile_form = ProfileForm()  # Form for the user's profile
+
 
     return render(request, 'base/login_register.html', {
         'form': form,               # Pass the form for registration or login
@@ -238,6 +249,27 @@ def profile(request):
         'password_form': password_form, 
         'rooms': rooms 
     })
+
+@login_required
+def profile_view(request):
+    user_profile = request.user.profile  # Get the user's profile
+
+
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=user_profile)
+        if form.is_valid():
+            form.save()  # Save the updated profile data
+            return redirect('profile')  # Redirect to the profile page after saving
+    else:
+        form = ProfileForm(instance=user_profile)  # Show the current profile data in the form
+
+
+    context = {
+        'form': form,
+        'user': request.user,
+        'rooms': request.user.rooms_created.all(),  # Add created rooms to the context
+    }
+    return render(request, 'base/profile.html', context)
 
 def add_to_comparison(request):
     """Handles adding a university to the comparison index."""

@@ -9,7 +9,7 @@ class Profile(models.Model):
         (3, 'Urban'),
     ]
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     gre_score = models.IntegerField(null=True, blank=True, help_text="Enter your GRE score.")
     gmat_score = models.IntegerField(null=True, blank=True, help_text="Enter your GMAT score.")
     undergrad_gpa = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
