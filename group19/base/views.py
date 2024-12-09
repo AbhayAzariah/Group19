@@ -24,11 +24,22 @@ def compare(request):
 
 # View for listing rooms with pagination
 def room_list(request):
-    rooms = Room.objects.all().order_by('id')
+    query = request.GET.get('q', '')  # Get the search query from GET
+    rooms = Room.objects.all()
+
+    if query:
+        rooms = rooms.filter(name__icontains=query) | rooms.filter(description__icontains=query)
+
     paginator = Paginator(rooms, 5)  # 5 rooms per page
     page = request.GET.get('page')
     rooms_paginated = paginator.get_page(page)
-    return render(request, 'base/room_list.html', {'rooms': rooms_paginated})
+
+    context = {
+        'rooms': rooms_paginated,
+        'query': query,
+    }
+    return render(request, 'base/room_list.html', context)
+
 
 # View for creating a room
 @login_required(login_url='login_register')

@@ -5,23 +5,25 @@
 <div class="container room-list">
     <div class="room-list-header">
         <h2 class="room-list-title">Chat Rooms</h2>
+
+        <!-- Search Form -->
+        <form method="GET" action="{% url 'room_list' %}" class="search-form">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search rooms">
+            <button type="submit" class="btn btn-search">Search</button>
+        </form>
+
         <a href="{% url 'create_room' %}" class="btn btn-primary">Create Room</a>
     </div>
+
     <ul class="room-list">
         {% for room in rooms %}
             <li class="room-item">
-                <!-- Wrap the entire room item with an anchor tag to make it clickable -->
                 <a href="{% url 'chatroom' room.id %}" class="room-link">
-                    <!-- Room Header (Name and Time) -->
                     <div class="room-header">
                         <p class="room-name">@{{ room.creator.username }}</p>
                         <p class="room-time">{{ room.created_at|timesince }} ago</p>
                     </div>
-
-                    <!-- Room Name under the header -->
                     <h3 class="room-name">{{ room.name }}</h3>
-
-                    <!-- Room Description -->
                     <p class="room-description">
                         {% if room.description|length > 100 %}
                             {{ room.description|slice:":100" }}...
@@ -37,17 +39,17 @@
     <!-- Pagination -->
     <div class="pagination">
         {% if rooms.has_previous %}
-            <a href="?page={{ rooms.previous_page_number }}" class="pagination-btn">Previous</a>
+            <a href="?page={{ rooms.previous_page_number }}&q={{ query }}" class="pagination-btn">Previous</a>
         {% endif %}
         {% for num in rooms.paginator.page_range %}
             {% if rooms.number == num %}
                 <strong class="current-page">{{ num }}</strong>
             {% else %}
-                <a href="?page={{ num }}" class="pagination-btn">{{ num }}</a>
+                <a href="?page={{ num }}&q={{ query }}" class="pagination-btn">{{ num }}</a>
             {% endif %}
         {% endfor %}
         {% if rooms.has_next %}
-            <a href="?page={{ rooms.next_page_number }}" class="pagination-btn">Next</a>
+            <a href="?page={{ rooms.next_page_number }}&q={{ query }}" class="pagination-btn">Next</a>
         {% endif %}
     </div>
 </div>
