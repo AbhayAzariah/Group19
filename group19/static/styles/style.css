@@ -11,12 +11,16 @@ html {
 }
 
 body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
     line-height: 1.6;
     font-weight: 400;
     font-size: 1.5rem;
     color: black;
     background-color: white;
-    min-height: 100vh;
 }
 
 a {
@@ -282,6 +286,10 @@ footer .footer-content p {
     border-radius: 15px;
     margin: 30px auto; 
     max-width: 110rem; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 
@@ -734,6 +742,10 @@ form button:hover {
     background-color: #cfd8e0;
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 .profile-heading {

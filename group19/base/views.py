@@ -91,12 +91,22 @@ def edit_room(request, room_id):
 def delete_room(request, room_id):
     room = get_object_or_404(Room, id=room_id)
 
+
     if room.creator != request.user:
         return HttpResponseForbidden("You are not authorized to delete this room")
 
-    room.delete()
-    messages.success(request, 'Room deleted successfully')
-    return redirect('room_list')
+
+    if request.method == "POST":
+        room.delete()
+        messages.success(request, 'Room deleted successfully')
+        return redirect('room_list')
+
+
+    return render(request, 'base/confirm_delete.html', {
+        'object': room,
+        'type': 'room',
+        'confirm_url': request.path
+    })
 
 # View for editing message content
 @login_required(login_url='login_register')
@@ -119,12 +129,23 @@ def edit_message(request, message_id):
 def delete_message(request, message_id):
     message = get_object_or_404(Message, id=message_id)
 
+
     if message.user != request.user:
         return HttpResponseForbidden("You are not authorized to delete this message")
 
-    message.delete()
-    messages.success(request, 'Message deleted successfully')
-    return redirect('chatroom', room_id=message.room.id)
+
+    if request.method == "POST":
+        room_id = message.room.id
+        message.delete()
+        messages.success(request, 'Message deleted successfully')
+        return redirect('chatroom', room_id=room_id)
+
+
+    return render(request, 'base/confirm_delete.html', {
+        'object': message,
+        'type': 'message',
+        'confirm_url': request.path
+    })
 
 # View for login and registration
 def login_register(request):
@@ -176,6 +197,9 @@ def logout_user(request):
 def profile(request):
     user = request.user
     password_form = PasswordChangeForm(user)
+    
+    # Fetch the rooms created by the logged-in user
+    rooms = Room.objects.filter(creator=user)
 
     if request.method == 'POST':
         if 'username' in request.POST:
@@ -195,7 +219,11 @@ def profile(request):
             else:
                 messages.error(request, 'Error updating password.')
 
-    return render(request, 'base/profile.html', {'user': user, 'password_form': password_form})
+    return render(request, 'base/profile.html', {
+        'user': user, 
+        'password_form': password_form, 
+        'rooms': rooms 
+    })
 
 # View for finding universities
 def find_university_view(request):
