@@ -6,7 +6,7 @@
     <h2>Find a University</h2>
 
     <!-- Search Form -->
-    <form method="POST" action="{% url 'find_university_view' %}">
+    <form method="POST" action="{% url 'find' %}">
         {% csrf_token %}
         <div class="form-group">
             <label for="search_query">Search for a University:</label>
