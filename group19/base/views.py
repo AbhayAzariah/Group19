@@ -8,6 +8,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.core.paginator import Paginator
 from .models import Room, Message
 from .forms import MessageForm
+from static.py.program_logic import fetch_school_details
 
 
 # View for home page
@@ -195,3 +196,13 @@ def profile(request):
                 messages.error(request, 'Error updating password.')
 
     return render(request, 'base/profile.html', {'user': user, 'password_form': password_form})
+
+# View for finding universities
+def find_university_view(request):
+    search_results = []
+    if request.method == "POST":
+        search_query = request.POST.get("search_query")
+        if search_query:
+            search_results = fetch_school_details(search_query)
+
+    return render(request, "base/find.html", {"search_results": search_results})

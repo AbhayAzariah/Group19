@@ -1,9 +1,38 @@
 {% extends 'main.html' %}
 
+
 {% block content %}
+<div class="container">
+    <h2>Find a University</h2>
 
-<main>
-    
-</main>
+    <!-- Search Form -->
+    <form method="POST" action="{% url 'find_university_view' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="search_query">Search for a University:</label>
+            <input type="text" id="search_query" name="search_query" class="form-control" placeholder="Enter a university name" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
 
-{% endblock content %}
+    <!-- Display Search Results -->
+    {% if search_results %}
+        <h3 class="mt-4">Search Results</h3>
+        <ul class="list-group">
+            {% for university in search_results %}
+                <li class="list-group-item">
+                    <strong>{{ university.school.name }}</strong> - {{ university.school.city }}, {{ university.school.state }}
+                    <ul>
+                        <li>Acceptance Rate: {{ university.latest.admissions.admission_rate.overall|floatformat:2 }}%</li>
+                        <li>Tuition: ${{ university.latest.cost.tuition.out_of_state|default:"N/A" }}</li>
+                        <li>Student Size: {{ university.latest.student.size|default:"N/A" }}</li>
+                        <li>Median Earnings (5 Years): ${{ university.latest.earnings.EARN_MDN_5YR|default:"N/A" }}</li>
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="mt-4">No results found. Try another search.</p>
+    {% endif %}
+</div>
+{% endblock %}

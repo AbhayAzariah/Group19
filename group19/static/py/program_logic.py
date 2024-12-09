@@ -1,11 +1,15 @@
 import requests
 import openai
 
+
 # Configure the OpenAI API key
 openai.api_key = "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"
 
+
 API_KEY = "gVaGW1IWY2gYQtinNU1z2aXQ5YxAfOM6175bQzmt"
 BASE_URL = "https://api.data.gov/ed/collegescorecard/v1/schools"
+
+
 
 
 def fetch_school_details(name):
@@ -33,11 +37,14 @@ def fetch_school_details(name):
         return []
 
 
+
+
 def rank_campus_preferences():
     """Prompts the user to rank their campus type preferences."""
     print("\nRank your preferences for campus type:")
     options = ["Rural", "Suburban", "Urban"]
     rankings = {}
+
 
     for i in range(1, 4):
         while True:
@@ -49,13 +56,17 @@ def rank_campus_preferences():
             else:
                 print("Invalid choice. Please choose from the remaining options.")
 
+
     return rankings
+
+
 
 
 def create_profile():
     """Creates and stores a user profile with GPA, test scores, campus preferences, recommendation letters, and desired major."""
     print("\nCreate Your Profile:")
     profile = {}
+
 
     while True:
         gpa = input("Enter your undergraduate GPA (0.0 - 4.0): ").strip()
@@ -68,6 +79,7 @@ def create_profile():
                 print("GPA must be between 0.0 and 4.0.")
         except ValueError:
             print("Invalid input. Please enter a numeric value.")
+
 
     print("\nDo you want to include test scores?")
     print("1. GRE")
@@ -102,6 +114,7 @@ def create_profile():
     else:
         profile['Test Optional'] = True
 
+
     while True:
         try:
             letters = int(input("How many letters of recommendation will you have (0-5)? ").strip())
@@ -113,16 +126,22 @@ def create_profile():
         except ValueError:
             print("Invalid input. Please enter a numeric value.")
 
+
     profile['Campus Preferences'] = rank_campus_preferences()
+
 
     major = input("Enter your desired Graduate Program: ").strip()
     profile['Major'] = major
+
 
     print("\nProfile created successfully!")
     for key, value in profile.items():
         print(f"{key}: {value}")
 
+
     return profile
+
+
 
 
 def display_schools(schools):
@@ -141,10 +160,12 @@ def display_schools(schools):
             earnings_10yr = school.get("latest.earnings.10_yrs_after_entry.median", "N/A")
             earn_count_3yr = school.get("latest.earnings.EARN_COUNT_WNE_3YR", "N/A")
 
+
             if acceptance_rate is not None:
                 acceptance_rate = f"{acceptance_rate * 100:.2f}%"
             else:
                 acceptance_rate = "N/A"
+
 
             if earnings_5yr != "N/A":
                 earnings_5yr = f"${earnings_5yr:,}"
@@ -152,6 +173,7 @@ def display_schools(schools):
                 earnings_10yr = f"${earnings_10yr:,}"
             if earn_count_3yr != "N/A":
                 earn_count_3yr = f"{earn_count_3yr:,} graduates working and not enrolled"
+
 
             print(f"{index}. {name}")
             print(f"   Location: {location}")
@@ -163,10 +185,14 @@ def display_schools(schools):
             print(f"   Graduates Working (Not Enrolled, 3 Years): {earn_count_3yr}\n")
 
 
+
+
 def add_to_comparison(comparison_index, school):
     """Adds a school to the comparison index."""
     comparison_index.append(school)
     print(f"Added {school['school.name']} to the comparison index.")
+
+
 
 
 def display_comparison_index(comparison_index):
@@ -185,10 +211,12 @@ def display_comparison_index(comparison_index):
             earnings_10yr = school.get("latest.earnings.10_yrs_after_entry.median", "N/A")
             earn_count_3yr = school.get("latest.earnings.EARN_COUNT_WNE_3YR", "N/A")
 
+
             if acceptance_rate is not None:
                 acceptance_rate = f"{acceptance_rate * 100:.2f}%"
             else:
                 acceptance_rate = "N/A"
+
 
             if earnings_5yr != "N/A":
                 earnings_5yr = f"${earnings_5yr:,}"
@@ -196,6 +224,7 @@ def display_comparison_index(comparison_index):
                 earnings_10yr = f"${earnings_10yr:,}"
             if earn_count_3yr != "N/A":
                 earn_count_3yr = f"{earn_count_3yr:,} graduates working and not enrolled"
+
 
             print(f"{index}. {name}")
             print(f"   Location: {location}")
@@ -205,6 +234,8 @@ def display_comparison_index(comparison_index):
             print(f"   Median Earnings (5 years after graduation): {earnings_5yr}")
             print(f"   Median Earnings (10 years after entry): {earnings_10yr}")
             print(f"   Graduates Working (Not Enrolled, 3 Years): {earn_count_3yr}\n")
+
+
 
 
 def generate_recommendations(comparison_index, user_profile):
@@ -226,22 +257,29 @@ def generate_recommendations(comparison_index, user_profile):
             ],
         )
 
+
         recommendations = response.choices[0].message.content
         return recommendations
+
 
     except openai.error.OpenAIError as e:
         print(f"Error communicating with GPT-4: {e}")
         return None
 
 
+
+
 def main():
     print("Welcome to the Grad School Comparison Program!")
     print("\nBefore proceeding, you need to create your profile.")
 
+
     # Force user to create a profile
     user_profile = create_profile()
 
+
     comparison_index = []
+
 
     while True:
         print("\nMenu:")
@@ -251,10 +289,12 @@ def main():
         print("4. Exit")
         choice = input("Choose an option: ").strip()
 
+
         if choice == "1":
             name = input("Enter the university name (or part of it): ").strip()
             schools = fetch_school_details(name)
             display_schools(schools)
+
 
             if schools:
                 selection = input("Enter the number of the university to add to the comparison index (or 'q' to cancel): ").strip()
@@ -263,8 +303,10 @@ def main():
                 elif selection.lower() != 'q':
                     print("Invalid selection.")
 
+
         elif choice == "2":
             display_comparison_index(comparison_index)
+
 
         elif choice == "3":
             if not comparison_index:
@@ -275,13 +317,14 @@ def main():
                     print("\nRecommendations:\n")
                     print(recommendations)
 
+
         elif choice == "4":
             print("Goodbye!")
             break
 
+
         else:
             print("Invalid choice. Please try again.")
-
 
 if __name__ == "__main__":
     main()

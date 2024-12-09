@@ -1,9 +1,47 @@
-{% extends 'main.html' %}
+{% extends "main.html" %}
+
 
 {% block content %}
+<div class="container">
+    <h2>Compare Universities</h2>
 
-<main>
-    
-</main>
 
-{% endblock content %}
+    <!-- Form to Add Universities -->
+    <form method="POST" action="{% url 'compare' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="university">Enter University Name:</label>
+            <input type="text" id="university" name="university" class="form-control" placeholder="Enter a university name" required>
+        </div>
+        <button type="submit" name="action" value="add" class="btn btn-secondary">Add to Comparison Index</button>
+    </form>
+
+
+    <!-- Display the Comparison Index -->
+    {% if comparison_index %}
+        <h3 class="mt-4">Comparison Index</h3>
+        <ul class="list-group">
+            {% for university in comparison_index %}
+                <li class="list-group-item">
+                    <strong>{{ university.school.name }}</strong> - {{ university.school.city }}, {{ university.school.state }}
+                    <ul>
+                        <li>Acceptance Rate: {{ university.latest.admissions.admission_rate.overall|floatformat:2 }}%</li>
+                        <li>Tuition: ${{ university.latest.cost.tuition.out_of_state|default:"N/A" }}</li>
+                        <li>Student Size: {{ university.latest.student.size|default:"N/A" }}</li>
+                        <li>Median Earnings (5 Years): ${{ university.latest.earnings.EARN_MDN_5YR|default:"N/A" }}</li>
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+
+
+        <!-- Clear Comparison Index -->
+        <form method="POST" action="{% url 'compare' %}" class="mt-4">
+            {% csrf_token %}
+            <button type="submit" name="action" value="clear" class="btn btn-danger">Clear Comparison Index</button>
+        </form>
+    {% else %}
+        <p class="mt-4">No universities in the comparison index. Add universities to compare them.</p>
+    {% endif %}
+</div>
+{% endblock %}
