@@ -70,14 +70,23 @@
                 </div>
                 <button type="submit" class="btn btn-warning">Update Password</button>
             </form>
-        </div>                
+        </div>
+
+
+        <!-- Edit Profile Form -->
+        <div class="profile-card">
+            <h3>Edit Your Profile</h3>
+            <form method="POST">
+                {% csrf_token %}
+                {{ profile_form.as_p }}
+                <button type="submit" class="btn btn-success">Save Changes</button>
+            </form>
+        </div>
 
 
         <!-- User Created Rooms -->
         <div class="profile-card">
-            <div class="room-list-header">
-                <h2 class="profile-room-list-title">Your Created Rooms</h2>
-            </div>
+            <h2 class="profile-room-list-title">Your Created Rooms</h2>
             <ul class="room-list">
                 {% for room in rooms %}
                     <li class="room-item">
@@ -100,24 +109,6 @@
                     <p>You haven't created any rooms yet.</p>
                 {% endfor %}
             </ul>
-
-
-            <!-- Pagination -->
-            <div class="pagination">
-                {% if rooms.has_previous %}
-                    <a href="?page={{ rooms.previous_page_number }}" class="pagination-btn">Previous</a>
-                {% endif %}
-                {% for num in rooms.paginator.page_range %}
-                    {% if rooms.number == num %}
-                        <strong class="current-page">{{ num }}</strong>
-                    {% else %}
-                        <a href="?page={{ num }}" class="pagination-btn">{{ num }}</a>
-                    {% endif %}
-                {% endfor %}
-                {% if rooms.has_next %}
-                    <a href="?page={{ rooms.next_page_number }}" class="pagination-btn">Next</a>
-                {% endif %}
-            </div>
         </div>
     </div>
 </div>

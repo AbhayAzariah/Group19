@@ -10,8 +10,8 @@ class Profile(models.Model):
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    gre_score = models.IntegerField(null=True, blank=True, help_text="Enter your GRE score.")
-    gmat_score = models.IntegerField(null=True, blank=True, help_text="Enter your GMAT score.")
+    gre_score = models.IntegerField(null=True, blank=True)
+    gmat_score = models.IntegerField(null=True, blank=True)
     undergrad_gpa = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
     desired_field_of_study = models.CharField(max_length=100, null=True, blank=True)
     recommendation_letters = models.IntegerField(null=True, blank=True)

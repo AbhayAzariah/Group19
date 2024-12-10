@@ -225,16 +225,24 @@ def profile(request):
     user = request.user
     password_form = PasswordChangeForm(user)
     rooms = Room.objects.filter(creator=user)
+    
+    # Initialize the ProfileForm with the current user's profile
+    profile_form = ProfileForm(instance=user.profile)
 
     if request.method == 'POST':
+        # Handling the username change
         if 'username' in request.POST:
             username = request.POST.get('username').lower()
-            user.username = username
-            user.save()
-            messages.success(request, 'Username updated successfully.')
-            return redirect('profile')
+            if username != user.username:
+                user.username = username
+                user.save()
+                messages.success(request, 'Username updated successfully.')
+                return redirect('profile')
+            else:
+                messages.error(request, 'The new username is the same as the current one.')
 
-        if 'password' in request.POST:
+        # Handling the password change
+        elif 'password' in request.POST:
             password_form = PasswordChangeForm(user, request.POST)
             if password_form.is_valid():
                 password_form.save()
@@ -244,32 +252,22 @@ def profile(request):
             else:
                 messages.error(request, 'Error updating password.')
 
+        # Handling the profile update
+        elif 'profile' in request.POST:
+            profile_form = ProfileForm(request.POST, instance=user.profile)
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, 'Profile updated successfully.')
+                return redirect('profile')
+            else:
+                messages.error(request, 'Error updating profile.')
+
     return render(request, 'base/profile.html', {
-        'user': user, 
-        'password_form': password_form, 
-        'rooms': rooms 
+        'user': user,
+        'password_form': password_form,
+        'profile_form': profile_form,
+        'rooms': rooms,
     })
-
-@login_required
-def profile_view(request):
-    user_profile = request.user.profile  # Get the user's profile
-
-
-    if request.method == 'POST':
-        form = ProfileForm(request.POST, instance=user_profile)
-        if form.is_valid():
-            form.save()  # Save the updated profile data
-            return redirect('profile')  # Redirect to the profile page after saving
-    else:
-        form = ProfileForm(instance=user_profile)  # Show the current profile data in the form
-
-
-    context = {
-        'form': form,
-        'user': request.user,
-        'rooms': request.user.rooms_created.all(),  # Add created rooms to the context
-    }
-    return render(request, 'base/profile.html', context)
 
 def add_to_comparison(request):
     """Handles adding a university to the comparison index."""
