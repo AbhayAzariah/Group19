@@ -1,52 +1,183 @@
 {% extends "main.html" %}
-
+{% csrf_token %}
 {% block content %}
-<div class="container">
-    <h2>Compare Universities</h2>
+<div class="container mt-4">
+    <h2 class="text-center mb-4">University Comparison</h2>
 
-    <!-- Display the Comparison Index -->
-    {% if comparison_index %}
-        <h3 class="mt-4">Comparison Index</h3>
-        <table class="table table-striped mt-3">
-            <thead>
+    <!-- Comparison Table -->
+    <div id="comparison-container" class="table-responsive">
+        <table class="table table-bordered table-hover mt-3">
+            <thead class="table-dark text-center">
                 <tr>
                     <th>Name</th>
                     <th>Location</th>
                     <th>Acceptance Rate</th>
                     <th>Tuition</th>
                     <th>Student Size</th>
-                    <th>Median Earnings (5 Years)</th>
+                    <th>Median Earnings (10 Years)</th>
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody>
-                {% for university in comparison_index %}
-                    <tr>
-                        <td>{{ university.name }}</td>
-                        <td>{{ university.city }}, {{ university.state }}</td>
-                        <td>{{ university.acceptance_rate|floatformat:2 }}%</td>
-                        <td>${{ university.tuition|default:"N/A" }}</td>
-                        <td>{{ university.size|default:"N/A" }}</td>
-                        <td>${{ university.earnings_5yr|default:"N/A" }}</td>
-                        <td>
-                            <form method="POST" action="{% url 'compare' %}" style="display:inline;">
-                                {% csrf_token %}
-                                <input type="hidden" name="university_id" value="{{ university.id }}">
-                                <button type="submit" name="action" value="remove" class="btn btn-danger btn-sm">Remove</button>
-                            </form>
-                        </td>
-                    </tr>
-                {% endfor %}
+            <tbody id="comparison-table-body">
+                <!-- Universities will be populated here dynamically -->
             </tbody>
         </table>
+    </div>
 
-        <!-- Clear Comparison Index -->
-        <form method="POST" action="{% url 'compare' %}" class="mt-4">
-            {% csrf_token %}
-            <button type="submit" name="action" value="clear" class="btn btn-danger">Clear Comparison Index</button>
-        </form>
-    {% else %}
-        <p class="mt-4">No universities in the comparison index. Add universities to compare them.</p>
-    {% endif %}
+    <!-- No Data Placeholder -->
+    <div id="no-data" class="text-center mt-5" style="display: none;">
+        <p class="alert alert-warning">No universities in the comparison index. Add universities to compare them.</p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div id="action-buttons" class="text-center mt-4" style="display: none;">
+        <button id="clear-comparison" class="btn btn-danger">Clear Comparison Index</button>
+        <button id="generate-recommendation" class="btn btn-primary">Generate Personalized Recommendation</button>
+    </div>
 </div>
+
+<!-- Additional CSS for Better Spacing -->
+<style>
+    .table th, .table td {
+        vertical-align: middle;
+        text-align: center;
+        padding: 12px; /* Increase padding for better spacing */
+    }
+</style>
+
+<!-- JavaScript for Loading and Managing Comparison Index -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const comparisonTableBody = document.getElementById("comparison-table-body");
+        const noDataMessage = document.getElementById("no-data");
+        const actionButtons = document.getElementById("action-buttons");
+
+        // Load data from localStorage
+        let comparisonIndex = JSON.parse(localStorage.getItem("comparisonIndex")) || [];
+
+        // Function to populate the table
+        function populateTable() {
+            comparisonTableBody.innerHTML = ""; // Clear table
+            if (comparisonIndex.length > 0) {
+                // Show action buttons, hide no data message
+                actionButtons.style.display = "block";
+                noDataMessage.style.display = "none";
+
+                comparisonIndex.forEach((university, index) => {
+                    const row = document.createElement("tr");
+
+                    row.innerHTML = `
+                        <td><strong>${university.name}</strong></td>
+                        <td>${university.city}, ${university.state}</td>
+                        <td>${university.acceptanceRate || "N/A"}%</td>
+                        <td>${university.tuition !== "N/A" ? `$${parseInt(university.tuition).toLocaleString()}` : "N/A"}</td>
+                        <td>${university.size ? parseInt(university.size).toLocaleString() : "N/A"}</td>
+                        <td>${university.earnings10yr !== "N/A" ? `$${parseInt(university.earnings10yr).toLocaleString()}` : "N/A"}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm remove-university" data-index="${index}">Remove</button>
+                        </td>
+                    `;
+                    comparisonTableBody.appendChild(row);
+                });
+
+                // Add event listeners to Remove buttons
+                document.querySelectorAll(".remove-university").forEach((button) => {
+                    button.addEventListener("click", () => {
+                        const index = button.dataset.index;
+                        removeUniversity(index);
+                    });
+                });
+            } else {
+                // Hide action buttons, show no data message
+                actionButtons.style.display = "none";
+                noDataMessage.style.display = "block";
+            }
+        }
+
+        // Function to remove a university by index
+        function removeUniversity(index) {
+            comparisonIndex.splice(index, 1);
+            localStorage.setItem("comparisonIndex", JSON.stringify(comparisonIndex));
+            populateTable();
+        }
+
+        // Event listener for Clear Comparison button
+        document.getElementById("clear-comparison").addEventListener("click", () => {
+            comparisonIndex = [];
+            localStorage.setItem("comparisonIndex", JSON.stringify(comparisonIndex));
+            populateTable();
+        });
+
+        // Event listener for Generate Recommendation button
+        document.getElementById("generate-recommendation").addEventListener("click", () => {
+            if (comparisonIndex.length === 0) {
+                alert("No universities in the comparison index. Please add some universities to generate recommendations.");
+                return;
+            }
+
+            fetch("{% url 'generate_recommendation' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}",
+                },
+                body: JSON.stringify({ comparison_index: comparisonIndex }),
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    if (data.success) {
+                        // Open a new tab and display recommendations
+                        const newTab = window.open();
+                        newTab.document.write(`
+                            <html>
+                            <head>
+                                <title>Personalized Recommendations</title>
+                                <style>
+                                    body {
+                                        font-family: Arial, sans-serif;
+                                        margin: 20px;
+                                        line-height: 1.6;
+                                    }
+                                    h1 {
+                                        color: #2c3e50;
+                                    }
+                                    pre {
+                                        background: #f4f4f4;
+                                        padding: 10px;
+                                        border: 1px solid #ddd;
+                                        border-radius: 5px;
+                                        white-space: pre-wrap; /* Ensure line breaks */
+                                        word-wrap: break-word;
+                                    }
+                                </style>
+                            </head>
+                            <body>
+                                <h1>Personalized Recommendations</h1>
+                                <pre>${data.recommendations}</pre>
+                            </body>
+                            </html>
+                        `);
+                        newTab.document.close();
+                    } else {
+                        alert(data.message || "Failed to generate recommendations.");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    alert("An unexpected error occurred while generating recommendations.");
+                });
+        });
+
+        // Populate the table on page load
+        populateTable();
+
+        
+    });
+    
+</script>
 {% endblock %}

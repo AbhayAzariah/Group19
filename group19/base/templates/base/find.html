@@ -41,13 +41,6 @@
                                 N/A
                             {% endif %}
                         </p>
-                        <p><strong>Median Earnings (5 Years):</strong> 
-                            {% if result.earnings_5yr != "N/A" %}
-                                ${{ result.earnings_5yr|intcomma }}
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </p>
                         <p><strong>Median Earnings (10 Years):</strong> 
                             {% if result.earnings_10yr != "N/A" %}
                                 ${{ result.earnings_10yr|intcomma }}
@@ -55,28 +48,18 @@
                                 N/A
                             {% endif %}
                         </p>
-                        <p><strong>Working Graduates (3 Years):</strong> 
-                            {% if result.earn_count_3yr != "N/A" %}
-                                {{ result.earn_count_3yr|intcomma }}
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </p>
 
                         <!-- Add to Comparison Button -->
-                        <form method="POST" action="{% url 'add_to_comparison' %}" style="display:inline;">
-                            {% csrf_token %}
-                            <input type="hidden" name="name" value="{{ result.name }}">
-                            <input type="hidden" name="city" value="{{ result.city }}">
-                            <input type="hidden" name="state" value="{{ result.state }}">
-                            <input type="hidden" name="acceptance_rate" value="{{ result.acceptance_rate }}">
-                            <input type="hidden" name="tuition" value="{{ result.tuition }}">
-                            <input type="hidden" name="size" value="{{ result.size }}">
-                            <input type="hidden" name="earnings_5yr" value="{{ result.earnings_5yr }}">
-                            <input type="hidden" name="earnings_10yr" value="{{ result.earnings_10yr }}">
-                            <input type="hidden" name="earn_count_3yr" value="{{ result.earn_count_3yr }}">
-                            <button type="submit" class="btn btn-secondary btn-sm">Add to Comparison</button>
-                        </form>
+                        <button class="btn btn-secondary btn-sm add-to-comparison"
+                                data-name="{{ result.name }}"
+                                data-city="{{ result.city }}"
+                                data-state="{{ result.state }}"
+                                data-acceptance-rate="{{ result.acceptance_rate }}"
+                                data-tuition="{{ result.tuition }}"
+                                data-size="{{ result.size }}"
+                                data-earnings-10yr="{{ result.earnings_10yr }}">
+                            Add to Comparison
+                        </button>
                     </li>
                 {% endfor %}
             </ul>
@@ -85,4 +68,41 @@
         {% endif %}
     </div>
 </div>
+
+<!-- JavaScript for Client-Side Storage -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Get all "Add to Comparison" buttons
+        const buttons = document.querySelectorAll('.add-to-comparison');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Extract school data from button attributes
+                const school = {
+                    name: button.dataset.name,
+                    city: button.dataset.city,
+                    state: button.dataset.state,
+                    acceptanceRate: button.dataset.acceptanceRate,
+                    tuition: button.dataset.tuition,
+                    size: button.dataset.size,
+                    earnings10yr: button.dataset.earnings10yr,
+                };
+
+                // Get existing comparison data from localStorage
+                let comparisonIndex = JSON.parse(localStorage.getItem('comparisonIndex')) || [];
+
+                // Check if school is already in comparison index
+                const exists = comparisonIndex.some(item => item.name === school.name);
+                if (!exists) {
+                    // Add school to the comparison index
+                    comparisonIndex.push(school);
+                    localStorage.setItem('comparisonIndex', JSON.stringify(comparisonIndex));
+                    alert(`${school.name} added to comparison index.`);
+                } else {
+                    alert(`${school.name} is already in the comparison index.`);
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

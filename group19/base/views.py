@@ -9,37 +9,15 @@ from django.core.paginator import Paginator
 from .models import Room, Message, Profile
 from .forms import MessageForm, ProfileForm
 from static.py.program_logic import fetch_school_details
+from django.http import JsonResponse
+import openai
+import json
+import logging
 
 
 # View for home page
 def home(request):
     return render(request, 'base/home.html')
-
-# View for finding universities
-def find(request):
-    """
-    Handles the search for universities and displays the results.
-    """
-    search_results = []
-
-    if request.method == "POST":
-        # Get the search query from the form
-        search_query = request.POST.get("search_query", "").strip()
-        if search_query:
-            # Call the fetch_school_details function to get university data
-            search_results = fetch_school_details(search_query)
-
-            # Handle cases where no results are found
-            if not search_results:
-                messages.info(request, f"No results found for '{search_query}'. Please try another search.")
-        else:
-            messages.error(request, "Please enter a university name to search.")
-
-    return render(request, "base/find.html", {"search_results": search_results})
-
-# Other views remain unchanged
-def compare(request):
-    return render(request, 'base/compare.html')
 
 def room_list(request):
     query = request.GET.get('q', '')  # Get the search query from GET
@@ -294,3 +272,141 @@ def add_to_comparison(request):
             messages.info(request, f"{university['name']} is already in the comparison index.")
 
     return redirect('find')
+
+#AA Views 
+openai.api_key = "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"
+
+logger = logging.getLogger(__name__)
+
+def generate_recommendation(request):
+    if request.method == "POST":
+        try:
+            # Attempt to retrieve the stored comparison index from the session
+            comparison_index = request.session.get('stored_comparison_index', [])
+
+            # If there is no stored data, try to load it from the request body
+            if not comparison_index:
+                body = json.loads(request.body)
+                incoming_index = body.get("comparison_index", [])
+                if incoming_index:
+                    # Store the incoming comparison index in the session
+                    request.session['stored_comparison_index'] = incoming_index
+                    comparison_index = incoming_index
+                else:
+                    # No stored data and no data in the request
+                    return JsonResponse({"success": False, "message": "No stored data found. Please store data first."})
+
+            # Prepare the GPT-4 prompt using the comparison index
+            prompt = (
+                "You are an expert academic advisor. Based on the user's profile and the comparison index of graduate schools, "
+                "generate tailored recommendations. Mention likelihoods based on their GPAs and overall profile. Mention pros and cons of the school, "
+                "based on factors such as location and campus type (urban, suburban, rural). Try to be as quantitative as possible and use the data provided. "
+                "Here is the data:\n\n"
+                f"Comparison Index: {comparison_index}"
+            )
+
+            # Call GPT-4
+            response = openai.ChatCompletion.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": "You are an academic advisor assistant."},
+                    {"role": "user", "content": prompt},
+                ],
+            )
+
+            recommendations = response.choices[0].message.content
+            logger.debug(f"OpenAI response: {recommendations}")
+            return JsonResponse({"success": True, "recommendations": recommendations})
+
+        except openai.error.OpenAIError as e:
+            logger.error(f"OpenAI API error: {e}")
+            return JsonResponse({"success": False, "error": str(e)}, status=500)
+        except Exception as e:
+            logger.error(f"Unexpected error: {e}")
+            return JsonResponse({"success": False, "error": str(e)}, status=500)
+
+    return JsonResponse({"success": False, "message": "Invalid request method."}, status=400)
+
+# View for finding universities
+def find(request):
+    """
+    Handles the search for universities and displays the results.
+    """
+    search_results = []
+
+    if request.method == "POST":
+        # Get the search query from the form
+        search_query = request.POST.get("search_query", "").strip()
+        if search_query:
+            # Call the fetch_school_details function to get university data
+            search_results = fetch_school_details(search_query)
+
+            # Handle cases where no results are found
+            if not search_results:
+                messages.info(request, f"No results found for '{search_query}'. Please try another search.")
+        else:
+            messages.error(request, "Please enter a university name to search.")
+
+    return render(request, "base/find.html", {"search_results": search_results})
+
+def compare(request):
+    return render(request, 'base/compare.html')
+
+def room_list(request):
+    query = request.GET.get('q', '')  
+    rooms = Room.objects.all()
+
+    if query:
+        rooms = rooms.filter(name__icontains=query) | rooms.filter(description__icontains=query)
+
+    paginator = Paginator(rooms, 5)  # 5 rooms per page
+    page = request.GET.get('page')
+    rooms_paginated = paginator.get_page(page)
+
+    context = {
+        'rooms': rooms_paginated,
+        'query': query,
+    }
+    return render(request, 'base/room_list.html', context)
+
+def add_to_comparison(request):
+    """Handles adding a university to the comparison index."""
+    if request.method == "POST":
+        comparison_index = request.session.get('comparison_index', [])
+
+        university = {
+            "name": request.POST.get("name"),
+            "city": request.POST.get("city"),
+            "state": request.POST.get("state"),
+            "acceptance_rate": request.POST.get("acceptance_rate"),
+            "tuition": request.POST.get("tuition"),
+            "size": request.POST.get("size"),
+            "earnings_5yr": request.POST.get("earnings_5yr"),
+            "earnings_10yr": request.POST.get("earnings_10yr"),
+            "earn_count_3yr": request.POST.get("earn_count_3yr"),
+        }
+
+        if university not in comparison_index:
+            comparison_index.append(university)
+            request.session['comparison_index'] = comparison_index
+            messages.success(request, f"{university['name']} added to comparison index.")
+        else:
+            messages.info(request, f"{university['name']} is already in the comparison index.")
+
+    return redirect('find')
+
+def store_comparison_data(request):
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body)
+            comparison_index = body.get("comparison_index", [])
+
+            if not comparison_index:
+                return JsonResponse({"success": False, "message": "Comparison index is empty."})
+
+            # Store comparison_index in the session
+            request.session['stored_comparison_index'] = comparison_index
+            return JsonResponse({"success": True, "message": "Data stored successfully."})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=500)
+    return JsonResponse({"success": False, "message": "Invalid request method."}, status=400)
